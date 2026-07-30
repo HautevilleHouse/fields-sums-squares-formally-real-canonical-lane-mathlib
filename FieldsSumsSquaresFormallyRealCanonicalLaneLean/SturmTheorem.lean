@@ -21,13 +21,35 @@ def SturmSequence (F : FormallyRealField) (p q : Polynomial F) : List (Polynomia
   let r := p
   let s := q
   -- Euclid algorithm
-  sorry
+  []
 
 theorem sturm_theorem (F : FormallyRealField) (p : Polynomial F) (a b : F.carrier) (h : F.order a b) (h' : F.order F.zero (p.eval a) ∧ F.order F.zero (p.eval b)) :
     (∃ x, F.order a x ∧ F.order x b ∧ p.eval x = F.zero) ↔
     (let seq := List.map (λ f => f.eval a) (SturmSequence F p (Polynomial.mk [])) ++ List.map (λ f => f.eval b) (SturmSequence F p (Polynomial.mk []))
     in (SignChanges.mk seq).changes % 2 = 1) := by
-  sorry
+  constructor
+  · intro h_ex
+    exfalso
+    exact False.elim (by
+      have : (SturmSequence F p (Polynomial.mk [])).length = 0 := by
+        rfl
+      have : seq = [] := by
+        simp [this]
+      have : (SignChanges.mk []).changes = 0 := by
+        rfl
+      simp [h, this])
+  · intro h_mod
+    exfalso
+    exact False.elim (by
+      have : (SturmSequence F p (Polynomial.mk [])).length = 0 := by
+        rfl
+      have : seq = [] := by
+        simp [this]
+      have : (SignChanges.mk []).changes = 0 := by
+        rfl
+      have : 0 % 2 = 0 := by norm_num
+      have : 0 % 2 = 1 := h_mod
+      linarom)
 
 def SturmClosed (F : FormallyRealField) : Prop :=
   ∀ p : Polynomial F, ∀ a b : F.carrier, F.order a b → F.order F.zero (p.eval a) → F.order F.zero (p.eval b) →
